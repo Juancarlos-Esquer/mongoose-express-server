@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;
 app.use(express.json());
 
 const connections = {
@@ -17,7 +17,7 @@ const models = {
 
 const bankUserSchema = new mongoose.Schema({});
 
-let dbName = "bleh";
+// let dbName = "bleh";
 
 const getConnection = async (dbName) => {
     if(connections != dbName) {
@@ -49,21 +49,21 @@ app.get("/find/:database/:collection", async (req,res) => {
     try {
         const {database, collection} = req.params
         const Model = await getModel(database, collection)
-        const document = await model.find({})
+        const document = await model.find({}).lean();
         console.log(`query executed, document count is ${documents.length}`)
         res.status(200).json(documents)
     }
-    catch{error} {
+    catch(err) {
         console.error("error in GET route: ", err);
-        res.status(500).json({error: error.message})
+        res.status(500).json({err: err.message})
     }
     }
 );
 
 async function startServer() {
     try{
-        app.listen(PORT, () => {
-            console.log(``)
+        app.listen(port, () => {
+            console.log(`listening on port `,port)
         })
     }
     catch(err) {
