@@ -104,7 +104,10 @@ app.post('/insert/:database/:collection', async (req, res) => {
         // Log a success message to the console
         console.log("Successful POST request");
         // Send back the newly created document as JSON with a 201 status code
-        res.status(201).json({})
+        res.status(201).json({
+            message: `Document saved successfully`,
+            document: newDocument
+        })
     } catch (err) {
         // Log any errors to the console
         console.error("Error in POST route", err)
@@ -116,29 +119,50 @@ app.post('/insert/:database/:collection', async (req, res) => {
 app.put('/update/:database/:collection/:id', async (req, res) => {
     try {
         // Extract the database, collection, and id from request parameters
+        const { database, collection, id } = req.params
         // Get the request body as data
+        const data = req.body
         // Get the appropriate Mongoose model
+        const Model = await getModel(database, collection);
         // Find the document by id and update it
+        const updatedDocument = Model.findByIdAndUpdate(id, data, {new: true, runValidators: true});
         // If document was not found, early return with a 404 status and error message
+        if (!updatedDocument) {
+            return res.status(404).json({message:"An error occured, the document was not found"})
+        }
         // Log a success message to the console
+        console.log("Document was created successfully")
         // Send back the updated document with a 200 status code
+        res.status(200).json({message: `Document with id: ${id} was updated succesfully`})
     } catch (err) {
         // Log error to the console
+        console.error("There was an error updating", err)
         // Send back a 400 status code with the error message
+        res.status(400).json({error: err.message})
     }
 });
 
 app.delete('/delete/:database/:collection/:id', async (req, res) => {
     try {
         // Extract the database, collection, and id from request parameters
+        const {database,collection,id} = req.params
         // Get the appropriate Mongoose model
+        const Model = await getModel(database,collection)
         // Find and delete the document by id
+        const deletedDocument = Model.findByIdAndDelete(id)
         // If document not found, return 404 status code with error message
+        if (!deletedDocument) {
+            return res.status(404).json({message: "An error occured, the document was not found"})
+        }
         // Log success message to the console
+        console.log("Document was created successfully")
         // Send back a success message with a 200 status code
+        res.status(200).json({message: `Document with id: ${id} was deleted succesfully`})
     } catch (err) {
         // Log error to the console
+        console.error("There was an error deleting", err)
         // Send back a 400 status code with the error message
+        res.status(400).json({error:err.message})
     }
 });
 

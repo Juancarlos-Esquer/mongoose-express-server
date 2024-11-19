@@ -16,6 +16,7 @@ Content-Type: application/json
     "food_group": "proteins"
 }
 
+@delete-id =  
 ###
-DELETE http://localhost:3000/delete-collection/{{database}}/{{collection}}
+DELETE http://localhost:3000/delete-collection/{{database}}/{{collection}}/{{delete-id}}
 Content-Type: application/json
